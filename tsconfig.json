@@ -13,7 +13,7 @@
     "removeComments": false,
     "preserveConstEnums": true,
     "noImplicitAny": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "alwaysStrict": true,

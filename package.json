@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rollup -c && cp ./src/index.html ./dist && cp ./src/style.css ./dist"
+    "build": "rollup -c"
   },
   "repository": {
     "type": "git",

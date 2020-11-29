@@ -42,7 +42,7 @@ const mockProcessPlugin = {
 };
 
 export default {
-  input: 'src/main.ts',
+  input: './src/main.ts',
   plugins: [
     typescript(),
     resolve(),
@@ -50,8 +50,7 @@ export default {
     mockProcessPlugin
   ],
   output: {
-    file: 'dist/app.js',
+    file: './web/app.js',
     format: 'es'
   }
 };
-

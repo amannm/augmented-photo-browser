@@ -30257,4 +30257,128 @@ if (env.NODE_ENV === 'production') {
 }
 });
 
-reactDom.render(react.createElement("section", null, "hello world"), document.getElementById("root"));
+class SimpleImageBrowser extends react.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            loadedFiles: [],
+            currentFile: null
+        };
+        this.handleFilesSelect = this.handleFilesSelect.bind(this);
+        this.handleItemSelect = this.handleItemSelect.bind(this);
+    }
+    handleFilesSelect(files) {
+        this.setState({
+            loadedFiles: files
+        });
+    }
+    handleItemSelect(file) {
+        this.setState({
+            currentFile: file
+        });
+    }
+    render() {
+        const imageFileList = react.createElement(ImageFileList, {
+            disabled: false,
+            files: this.state.loadedFiles,
+            selectListener: this.handleItemSelect
+        });
+        const imageFilePicker = react.createElement(ImageFilePicker, {
+            disabled: false,
+            selectListener: this.handleFilesSelect
+        });
+        const imageViewer = react.createElement(ImageViewer, {
+            currentFile: this.state.currentFile
+        });
+        const viewPane = react.createElement("section", { className: "ViewPane" }, imageViewer, imageFileList);
+        return react.createElement("section", { className: "SimpleImageBrowser" }, imageFilePicker, viewPane);
+    }
+}
+class ImageViewer extends react.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let image = null;
+        if (this.props.currentFile !== null) {
+            const url = URL.createObjectURL(this.props.currentFile);
+            image = react.createElement("img", {
+                src: url,
+                onLoad: (e) => {
+                    URL.revokeObjectURL(url);
+                }
+            });
+        }
+        return react.createElement("section", { className: "ImageViewer" }, image);
+    }
+}
+class ImageFilePicker extends react.Component {
+    constructor(props) {
+        super(props);
+        this.fileInputElement = react.createRef();
+    }
+    render() {
+        const fileInput = react.createElement("input", {
+            type: "file",
+            multiple: true,
+            accept: "image/*",
+            style: { display: "none" },
+            ref: this.fileInputElement,
+            onChange: (e) => {
+                const selectedFiles = this.fileInputElement.current.files;
+                if (selectedFiles.length > 0) {
+                    const files = Array(selectedFiles.length);
+                    for (let i = 0; i < selectedFiles.length; i++) {
+                        files[i] = selectedFiles.item(i);
+                    }
+                    this.props.selectListener(files);
+                }
+            }
+        });
+        const fileSelectButton = react.createElement("button", {
+            onClick: (e) => {
+                this.fileInputElement.current.click();
+                e.preventDefault();
+            }
+        }, "Open...");
+        return react.createElement("section", { className: "ImageFilePicker" }, fileInput, fileSelectButton);
+    }
+}
+class ImageFileList extends react.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedImageFile: null
+        };
+        this.handleSelect = this.handleSelect.bind(this);
+    }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.selectedImageFile !== this.state.selectedImageFile) {
+            this.props.selectListener(this.state.selectedImageFile);
+        }
+    }
+    handleSelect(nextFile) {
+        this.setState({
+            selectedImageFile: nextFile
+        });
+    }
+    render() {
+        const images = this.props.files.map(file => {
+            const url = URL.createObjectURL(file);
+            return react.createElement("img", {
+                key: file.name,
+                src: url,
+                onLoad: (e) => {
+                    URL.revokeObjectURL(url);
+                },
+                onClick: (e) => {
+                    this.handleSelect(file);
+                },
+                className: file === this.state.selectedImageFile ? "selected" : null
+            });
+        });
+        return react.createElement("section", { className: "ImageFileList" }, images);
+    }
+}
+
+reactDom.render(react.createElement("section", null, react.createElement(SimpleImageBrowser, null)), document.getElementById("root"));

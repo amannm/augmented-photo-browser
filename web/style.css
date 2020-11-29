@@ -1,0 +1,47 @@
+body {
+    margin: 0;
+}
+.ImageFilePicker {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: stretch;
+}
+
+.ImageFilePicker button {
+    width: 100px;
+}
+
+.SimpleImageBrowser .ViewPane {
+}
+
+.ImageFileList {
+    position: absolute;
+    top:0;
+    right:0;
+    height: 100%;
+    width: 50%;
+    overflow: scroll;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.ImageFileList img {
+    height: 240px;
+    cursor: pointer;
+}
+
+.ImageViewer {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ImageViewer img {
+    max-width: 100%;
+    max-height: 100%;
+}
