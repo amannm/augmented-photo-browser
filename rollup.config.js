@@ -1,4 +1,3 @@
-import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
@@ -42,9 +41,8 @@ const mockProcessPlugin = {
 };
 
 export default {
-  input: './src/main.ts',
+  input: './dist/main.js',
   plugins: [
-    typescript(),
     resolve(),
     commonjs(),
     mockProcessPlugin

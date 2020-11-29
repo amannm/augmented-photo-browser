@@ -7,8 +7,9 @@
       "es6",
       "dom"
     ],
-    "sourceMap": false,
-    "declaration": false,
+    "outDir": "./dist",
+    "sourceMap": true,
+    "declaration": true,
     "allowJs": false,
     "removeComments": false,
     "preserveConstEnums": true,
