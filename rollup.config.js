@@ -11,7 +11,6 @@ import MagicString from 'magic-string';
 
 // The virtual id for our shared "process" mock. We prefix it with \0 so that other plugins ignore it
 const INJECT_PROCESS_MODULE_ID = '\0inject-process';
-const NODE_ENV = "production";
 
 const mockProcessPlugin = {
   name: 'inject-process-plugin',
@@ -25,7 +24,7 @@ const mockProcessPlugin = {
     if (id === INJECT_PROCESS_MODULE_ID) {
       // All fields of 'process' we want to mock are top level exports of the module.
       // For now I hardcoded "NODE_ENV" but you probably want to put more logic here.
-      return `export const env = ${JSON.stringify(NODE_ENV)};\n`;
+      return `export const env = ${JSON.stringify({ NODE_ENV: "production" })};\n`;
     }
   },
   transform(code, id) {

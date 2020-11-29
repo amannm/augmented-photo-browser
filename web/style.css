@@ -1,19 +1,13 @@
 body {
     margin: 0;
 }
+
 .ImageFilePicker {
     position: fixed;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: stretch;
 }
 
 .ImageFilePicker button {
     width: 100px;
-}
-
-.SimpleImageBrowser .ViewPane {
 }
 
 .ImageFileList {
