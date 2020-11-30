@@ -3,17 +3,26 @@ body {
 }
 
 .ImageFilePicker {
-    position: fixed;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .ImageFilePicker button {
-    width: 100px;
+    width: 200px;
+    height: 100px;
+    font-size: 1.3em;
 }
 
 .ImageFileList {
     position: absolute;
-    top:0;
-    right:0;
+    top: 0;
+    right: 0;
     height: 100%;
     width: 50%;
     overflow: scroll;

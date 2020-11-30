@@ -3,6 +3,7 @@ import * as React from "react";
 interface SimpleImageBrowserState {
     loadedFiles: File[];
     currentFile: File;
+    currentMode: string
 }
 export class SimpleImageBrowser extends React.Component<{}, SimpleImageBrowserState> {
 
@@ -10,10 +11,12 @@ export class SimpleImageBrowser extends React.Component<{}, SimpleImageBrowserSt
         super(props);
         this.state = {
             loadedFiles: [],
-            currentFile: null
+            currentFile: null,
+            currentMode: "browse"
         };
         this.handleFilesSelect = this.handleFilesSelect.bind(this);
         this.handleItemSelect = this.handleItemSelect.bind(this);
+        this.handleModeSelect = this.handleModeSelect.bind(this);
     }
 
     handleFilesSelect(files: File[]) {
@@ -28,21 +31,49 @@ export class SimpleImageBrowser extends React.Component<{}, SimpleImageBrowserSt
         });
     }
 
+    handleModeSelect(mode: string) {
+        this.setState({
+            currentMode: mode
+        });
+        switch (mode) {
+            case "browse":
+                break;
+            case "faceMesh":
+                break;
+            case "bodyPix":
+                break;
+            case "poseNet":
+                break;
+            default:
+                throw "unsupported mode: " + mode;
+        }
+    }
+
     render() {
-        const imageFileList = React.createElement(ImageFileList, {
-            disabled: false,
-            files: this.state.loadedFiles,
-            selectListener: this.handleItemSelect
-        });
-        const imageFilePicker = React.createElement(ImageFilePicker, {
-            disabled: false,
-            selectListener: this.handleFilesSelect
-        });
+        let listElement;
+        if (this.state.loadedFiles.length === 0) {
+            listElement = React.createElement(ImageFilePicker, {
+                disabled: false,
+                selectListener: this.handleFilesSelect
+            });
+        } else {
+            listElement = React.createElement(ImageFileList, {
+                disabled: false,
+                files: this.state.loadedFiles,
+                selectListener: this.handleItemSelect
+            });
+        }
         const imageViewer = React.createElement(ImageViewer, {
             currentFile: this.state.currentFile
         });
-        const viewPane = React.createElement("section", { className: "ViewPane" }, imageViewer, imageFileList);
-        return React.createElement("section", { className: "SimpleImageBrowser" }, imageFilePicker, viewPane)
+        const viewPane = React.createElement("section", { className: "ViewPane" }, imageViewer, listElement);
+        const browseModePicker = React.createElement(BrowseModePicker, {
+            disabled: false,
+            initialMode: this.state.currentMode,
+            selectListener: this.handleModeSelect
+        });
+        const controlPane = React.createElement("section", { className: "ControlPane" }, browseModePicker);
+        return React.createElement("section", { className: "SimpleImageBrowser" }, controlPane, viewPane)
     }
 }
 
@@ -50,6 +81,7 @@ interface ImageViewerProps {
     currentFile: File;
 }
 class ImageViewer extends React.Component<ImageViewerProps> {
+
     constructor(props: ImageViewerProps) {
         super(props);
     }
@@ -60,12 +92,61 @@ class ImageViewer extends React.Component<ImageViewerProps> {
             const url = URL.createObjectURL(this.props.currentFile);
             image = React.createElement("img", {
                 src: url,
-                onLoad: (e) => {
+                onLoad: _ => {
                     URL.revokeObjectURL(url);
                 }
             });
         }
         return React.createElement("section", { className: "ImageViewer" }, image)
+    }
+}
+
+interface BrowseModePickerProps {
+    disabled: boolean;
+    initialMode: string;
+    selectListener: (nextValue: string) => void;
+}
+interface BrowseModePickerState {
+    selectedMode: string;
+}
+class BrowseModePicker extends React.Component<BrowseModePickerProps, BrowseModePickerState> {
+
+    constructor(props: BrowseModePickerProps) {
+        super(props);
+        this.state = {
+            selectedMode: props.initialMode
+        }
+        this.handleModeSelect = this.handleModeSelect.bind(this);
+    }
+
+    componentDidUpdate(_: BrowseModePickerProps, prevState: BrowseModePickerState) {
+        if (prevState.selectedMode !== this.state.selectedMode) {
+            this.props.selectListener(this.state.selectedMode);
+        }
+    }
+
+    handleModeSelect(mode: string) {
+        this.setState({
+            selectedMode: mode
+        });
+    }
+
+    render() {
+        const buttons = [
+            ["browse", "Browse"],
+            ["faceMesh", "FaceMesh"],
+            ["bodyPix", "BodyPix"],
+            ["poseNet", "PoseNet"]
+        ].map(pair => {
+            return React.createElement("button", {
+                disabled: this.props.disabled,
+                onClick: _ => {
+                    this.handleModeSelect(pair[0]);
+                },
+                className: this.state.selectedMode === pair[0] ? "selected" : null
+            }, pair[1])
+        });
+        return React.createElement("section", { className: "BrowseModePicker" }, ...buttons)
     }
 }
 
@@ -89,7 +170,7 @@ class ImageFilePicker extends React.Component<ImageFilePickerProps> {
             accept: "image/*",
             style: { display: "none" },
             ref: this.fileInputElement,
-            onChange: (e) => {
+            onChange: _ => {
                 const selectedFiles = this.fileInputElement.current.files;
                 if (selectedFiles.length > 0) {
                     const files = Array<File>(selectedFiles.length);
@@ -129,7 +210,7 @@ class ImageFileList extends React.Component<ImageFileListProps, ImageFileListSta
         this.handleSelect = this.handleSelect.bind(this);
     }
 
-    componentDidUpdate(prevProps: ImageFileListProps, prevState: ImageFileListState) {
+    componentDidUpdate(_: ImageFileListProps, prevState: ImageFileListState) {
         if (prevState.selectedImageFile !== this.state.selectedImageFile) {
             this.props.selectListener(this.state.selectedImageFile);
         }

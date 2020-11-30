@@ -10,18 +10,18 @@
     "outDir": "./dist",
     "sourceMap": true,
     "declaration": true,
-    "allowJs": false,
     "removeComments": false,
     "preserveConstEnums": true,
+    "allowJs": false,
+    "alwaysStrict": true,
     "noImplicitAny": true,
-    "noUnusedLocals": false,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedParameters": false,
-    "pretty": true,
     "noFallthroughCasesInSwitch": true,
-    "allowUnreachableCode": false
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "allowUnreachableCode": false,
+    "pretty": true
   },
   "include": [
     "src/"

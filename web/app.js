@@ -510,10 +510,12 @@ class SimpleImageBrowser extends react.Component {
         super(props);
         this.state = {
             loadedFiles: [],
-            currentFile: null
+            currentFile: null,
+            currentMode: "browse"
         };
         this.handleFilesSelect = this.handleFilesSelect.bind(this);
         this.handleItemSelect = this.handleItemSelect.bind(this);
+        this.handleModeSelect = this.handleModeSelect.bind(this);
     }
     handleFilesSelect(files) {
         this.setState({
@@ -525,21 +527,49 @@ class SimpleImageBrowser extends react.Component {
             currentFile: file
         });
     }
+    handleModeSelect(mode) {
+        this.setState({
+            currentMode: mode
+        });
+        switch (mode) {
+            case "browse":
+                break;
+            case "faceMesh":
+                break;
+            case "bodyPix":
+                break;
+            case "poseNet":
+                break;
+            default:
+                throw "unsupported mode: " + mode;
+        }
+    }
     render() {
-        const imageFileList = react.createElement(ImageFileList, {
-            disabled: false,
-            files: this.state.loadedFiles,
-            selectListener: this.handleItemSelect
-        });
-        const imageFilePicker = react.createElement(ImageFilePicker, {
-            disabled: false,
-            selectListener: this.handleFilesSelect
-        });
+        let listElement;
+        if (this.state.loadedFiles.length === 0) {
+            listElement = react.createElement(ImageFilePicker, {
+                disabled: false,
+                selectListener: this.handleFilesSelect
+            });
+        }
+        else {
+            listElement = react.createElement(ImageFileList, {
+                disabled: false,
+                files: this.state.loadedFiles,
+                selectListener: this.handleItemSelect
+            });
+        }
         const imageViewer = react.createElement(ImageViewer, {
             currentFile: this.state.currentFile
         });
-        const viewPane = react.createElement("section", { className: "ViewPane" }, imageViewer, imageFileList);
-        return react.createElement("section", { className: "SimpleImageBrowser" }, imageFilePicker, viewPane);
+        const viewPane = react.createElement("section", { className: "ViewPane" }, imageViewer, listElement);
+        const browseModePicker = react.createElement(BrowseModePicker, {
+            disabled: false,
+            initialMode: this.state.currentMode,
+            selectListener: this.handleModeSelect
+        });
+        const controlPane = react.createElement("section", { className: "ControlPane" }, browseModePicker);
+        return react.createElement("section", { className: "SimpleImageBrowser" }, controlPane, viewPane);
     }
 }
 class ImageViewer extends react.Component {
@@ -552,12 +582,48 @@ class ImageViewer extends react.Component {
             const url = URL.createObjectURL(this.props.currentFile);
             image = react.createElement("img", {
                 src: url,
-                onLoad: (e) => {
+                onLoad: _ => {
                     URL.revokeObjectURL(url);
                 }
             });
         }
         return react.createElement("section", { className: "ImageViewer" }, image);
+    }
+}
+class BrowseModePicker extends react.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedMode: props.initialMode
+        };
+        this.handleModeSelect = this.handleModeSelect.bind(this);
+    }
+    componentDidUpdate(_, prevState) {
+        if (prevState.selectedMode !== this.state.selectedMode) {
+            this.props.selectListener(this.state.selectedMode);
+        }
+    }
+    handleModeSelect(mode) {
+        this.setState({
+            selectedMode: mode
+        });
+    }
+    render() {
+        const buttons = [
+            ["browse", "Browse"],
+            ["faceMesh", "FaceMesh"],
+            ["bodyPix", "BodyPix"],
+            ["poseNet", "PoseNet"]
+        ].map(pair => {
+            return react.createElement("button", {
+                disabled: this.props.disabled,
+                onClick: _ => {
+                    this.handleModeSelect(pair[0]);
+                },
+                className: this.state.selectedMode === pair[0] ? "selected" : null
+            }, pair[1]);
+        });
+        return react.createElement("section", { className: "BrowseModePicker" }, ...buttons);
     }
 }
 class ImageFilePicker extends react.Component {
@@ -572,7 +638,7 @@ class ImageFilePicker extends react.Component {
             accept: "image/*",
             style: { display: "none" },
             ref: this.fileInputElement,
-            onChange: (e) => {
+            onChange: _ => {
                 const selectedFiles = this.fileInputElement.current.files;
                 if (selectedFiles.length > 0) {
                     const files = Array(selectedFiles.length);
@@ -600,7 +666,7 @@ class ImageFileList extends react.Component {
         };
         this.handleSelect = this.handleSelect.bind(this);
     }
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(_, prevState) {
         if (prevState.selectedImageFile !== this.state.selectedImageFile) {
             this.props.selectListener(this.state.selectedImageFile);
         }
