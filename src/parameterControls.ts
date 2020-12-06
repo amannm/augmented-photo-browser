@@ -22,7 +22,7 @@ class NumericalParameterControl extends React.Component<NumericalParameterContro
         this.handleValueChange = this.handleValueChange.bind(this);
     }
 
-    componentDidUpdate(prevProps: NumericalParameterControlProps, prevState: NumericalParameterControlState) {
+    componentDidUpdate(_: NumericalParameterControlProps, prevState: NumericalParameterControlState) {
         if (prevState.value !== this.state.value) {
             this.props.changeListener.apply(this.state.value);
         }

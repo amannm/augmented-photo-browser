@@ -2,22 +2,10 @@
 import * as faceLandmarksDetection from "@tensorflow-models/face-landmarks-detection"
 import * as bodyPix from "@tensorflow-models/body-pix"
 
-import { Point2D, Point3D } from "./types";
+import { AnnotatedPredictionValues } from "./types";
 import { SemanticPartSegmentation } from "@tensorflow-models/body-pix";
 
-// clone of inaccessible type from mediapipe-facemesh
-export interface AnnotatedPredictionValues {
-    faceInViewConfidence: number;
-    boundingBox: {
-        topLeft: Point2D;
-        bottomRight: Point2D;
-    };
-    mesh: Point3D[];
-    scaledMesh: Point3D[];
-    annotations: {
-        [key: string]: Point3D[];
-    };
-}
+
 
 export async function detectFaceLandmarks(image: HTMLImageElement): Promise<AnnotatedPredictionValues[]> {
     const model = await faceLandmarksDetection.load(faceLandmarksDetection.SupportedPackages.mediapipeFacemesh);
